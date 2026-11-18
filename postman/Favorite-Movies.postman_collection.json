@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "Favorite Movies API",
+    "description": "CRUD and authentication/validation checks for the NestJS capstone.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "movieId", "value": "1" },
+    { "key": "apiToken", "value": "local-dev-token-change-me" }
+  ],
+  "item": [
+    {
+      "name": "List all movies",
+      "request": { "method": "GET", "url": "{{baseUrl}}/movies" }
+    },
+    {
+      "name": "Get one movie",
+      "request": { "method": "GET", "url": "{{baseUrl}}/movies/{{movieId}}" }
+    },
+    {
+      "name": "Create movie (401 without token)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Arrival\",\"director\":\"Denis Villeneuve\",\"releaseYear\":2016,\"genre\":\"Science fiction\",\"rating\":9}"
+        },
+        "url": "{{baseUrl}}/movies"
+      }
+    },
+    {
+      "name": "Create movie (validation error)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          }
+        ],
+        "body": { "mode": "raw", "raw": "{\"title\":\"\"}" },
+        "url": "{{baseUrl}}/movies"
+      }
+    },
+    {
+      "name": "Create movie (with token)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Arrival\",\"director\":\"Denis Villeneuve\",\"releaseYear\":2016,\"genre\":\"Science fiction\",\"rating\":9}"
+        },
+        "url": "{{baseUrl}}/movies",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  pm.collectionVariables.set('movieId', pm.response.json().id);",
+                "}"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Update movie",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"rating\":10}" },
+        "url": "{{baseUrl}}/movies/{{movieId}}"
+      }
+    },
+    {
+      "name": "Delete movie",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/movies/{{movieId}}" }
+    },
+    {
+      "name": "Missing movie (404)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/movies/999999" }
+    }
+  ]
+}
